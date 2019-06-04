@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.media.AudioFormat;
 import android.os.Environment;
+import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -23,6 +24,9 @@ public class MainActivity extends AppCompatActivity {
 
     File recordingFile;
 
+    WavRecorder wavRecorder;
+    Handler handler;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,16 +43,19 @@ public class MainActivity extends AppCompatActivity {
 
         checkRecordPermission();
 
-        File path = new File(getFilesDir().getAbsolutePath()+"/testrecord/");
+        /*
+
+        File path = new File(getFilesDir().getAbsolutePath()+"/WavRecorder/");
         path.mkdirs();
         try {
 
-            recordingFile = File.createTempFile("recording", ".wav", path);
+            recordingFile = File.createTempFile("record_temp", ".raw", path);
         } catch (IOException e) {
 
             throw new RuntimeException("Couldn't create file on SD card", e);
 
         }
+        */
     }
 
     /**
@@ -73,20 +80,37 @@ public class MainActivity extends AppCompatActivity {
 
     public void record() {
 
+        wavRecorder = new WavRecorder(getFilesDir().getAbsolutePath()+"/WavRecorder/path_to_file.wav", getFilesDir().getAbsolutePath()+"/WavRecorder/record_temp.raw");
+        wavRecorder.startRecording();
+
+        handler = new Handler();
+        Runnable r = new Runnable() {
+            public void run() {
+                wavRecorder.stopRecording();
+
+            }
+        };
+        handler.postDelayed(r, 5000);
+
+        /*
         startRecordingButton.setEnabled(false);
         stopRecordingButton.setEnabled(true);
 
         record = new RecordAudio();
         record.setFichier(recordingFile);
-        record.setRecording(true);
         record.execute();
+        */
     }
 
     public void stopRecording() {
 
+    wavRecorder.stopRecording();
+
+        /*
         if (record.isRecording()) {
             record.setRecording(false);
         }
+        */
 
     }
 
