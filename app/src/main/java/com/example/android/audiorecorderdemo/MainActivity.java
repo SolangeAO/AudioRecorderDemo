@@ -80,7 +80,10 @@ public class MainActivity extends AppCompatActivity {
 
     public void record() {
 
-        wavRecorder = new WavRecorder(getFilesDir().getAbsolutePath()+"/WavRecorder/path_to_file3.wav", getFilesDir().getAbsolutePath()+"/WavRecorder/record_temp.raw");
+        String outpath = getFilesDir().getAbsolutePath()+"/WavRecorder/path_to_file8.wav";
+        String inpath = getFilesDir().getAbsolutePath()+"/WavRecorder/record_temp.raw";
+
+        wavRecorder = new WavRecorder(outpath, inpath);
         wavRecorder.startRecording();
 
         handler = new Handler();

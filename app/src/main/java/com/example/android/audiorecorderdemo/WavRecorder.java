@@ -9,24 +9,18 @@ import java.io.IOException;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
-import android.os.Environment;
 
 public class WavRecorder {
 
     private static final int RECORDER_BPP = 16;
-    private static final String AUDIO_RECORDER_FOLDER = "AudioRecorder";
-    private static final String AUDIO_RECORDER_TEMP_FILE = "record_temp.raw";
     private static final int RECORDER_SAMPLERATE = 44100;
     private static final int RECORDER_CHANNELS = AudioFormat.CHANNEL_IN_MONO;
     private static final int RECORDER_AUDIO_ENCODING = AudioFormat.ENCODING_PCM_16BIT;
-    short[] audioData;
 
     private AudioRecord recorder = null;
-    private int bufferSize = 0;
+    private int bufferSize;
     private Thread recordingThread = null;
     private boolean isRecording = false;
-    int[] bufferData;
-    int bytesRecorded;
 
     private String output;
     private String input;
@@ -34,37 +28,9 @@ public class WavRecorder {
     public WavRecorder (String outpath, String inpath) {
         bufferSize = AudioRecord.getMinBufferSize(RECORDER_SAMPLERATE,
                 RECORDER_CHANNELS, RECORDER_AUDIO_ENCODING) * 3;
-        audioData = new short[bufferSize]; // short array that pcm data is put into.
         output = outpath;
         input = inpath;
 
-    }
-
-    private String getFilename() {
-        return (output);
-    }
-
-    private String getTempFilename() {
-
-        /*
-        String filepath = Environment.getExternalStorageDirectory().getPath();
-        File file = new File(filepath, AUDIO_RECORDER_FOLDER);
-
-        if (!file.exists()) {
-            file.mkdirs();
-        }
-        */
-
-         //File tempFile = new File(filepath, AUDIO_RECORDER_TEMP_FILE);
-        File tempFile = new File(input);
-
-        /*
-         if (tempFile.exists()) {
-        tempFile.delete();
-        }
-        */
-
-        return (input);
     }
 
     public void startRecording() {
@@ -90,7 +56,7 @@ public class WavRecorder {
 
     private void writeAudioDataToFile() {
         byte data[] = new byte[bufferSize];
-        String filename = getTempFilename();
+        String filename = input;
         FileOutputStream os = null;
 
         try {
@@ -99,7 +65,7 @@ public class WavRecorder {
             e.printStackTrace();
         }
 
-        int read = 0;
+        int read; //= 0;
         if (null != os) {
             while (isRecording) {
                 read = recorder.read(data, 0, bufferSize);
@@ -136,20 +102,20 @@ public class WavRecorder {
             recordingThread = null;
         }
 
-        copyWaveFile(getTempFilename(), getFilename());
+        copyWaveFile(input, output);
         deleteTempFile();
     }
 
     private void deleteTempFile() {
-        File file = new File(getTempFilename());
+        File file = new File(input);
         file.delete();
     }
 
     private void copyWaveFile(String inFilename, String outFilename) {
-        FileInputStream in = null;
-        FileOutputStream out = null;
-        long totalAudioLen = 0;
-        long totalDataLen = totalAudioLen + 36;
+        FileInputStream in;
+        FileOutputStream out;
+        long totalAudioLen;
+        long totalDataLen;
         long longSampleRate = RECORDER_SAMPLERATE;
         int channels = ((RECORDER_CHANNELS == AudioFormat.CHANNEL_IN_MONO) ? 1
                 : 2);
