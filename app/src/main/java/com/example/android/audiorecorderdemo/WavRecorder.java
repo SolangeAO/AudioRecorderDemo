@@ -57,35 +57,27 @@ public class WavRecorder {
     private void writeAudioDataToFile() {
         byte data[] = new byte[bufferSize];
         String filename = input;
-        FileOutputStream os = null;
+        FileOutputStream os;
 
         try {
             os = new FileOutputStream(filename);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
 
-        int read; //= 0;
-        if (null != os) {
-            while (isRecording) {
-                read = recorder.read(data, 0, bufferSize);
-                if (read > 0) {
-                }
+            int read;
+            if (null != os) {
+                while (isRecording) {
 
-                if (AudioRecord.ERROR_INVALID_OPERATION != read) {
-                    try {
+                    read = recorder.read(data, 0, bufferSize);
+
+                    if (AudioRecord.ERROR_INVALID_OPERATION != read) {
                         os.write(data);
-                    } catch (IOException e) {
-                        e.printStackTrace();
                     }
                 }
-            }
-
-            try {
                 os.close();
-            } catch (IOException e) {
-                e.printStackTrace();
             }
+        } catch (FileNotFoundException fnf) {
+            fnf.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -138,8 +130,8 @@ public class WavRecorder {
 
             in.close();
             out.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+        } catch (FileNotFoundException fnf) {
+            fnf.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -199,4 +191,3 @@ public class WavRecorder {
         out.write(header, 0, 44);
     }
 }
-
